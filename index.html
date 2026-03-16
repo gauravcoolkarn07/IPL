@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPL 2026 — TATA IPL Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a12;
+    --bg2: #080f1c;
+    --bg3: #0d1626;
+    --card: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+    --gold: #f5c842;
+    --gold2: #e8a50a;
+    --red: #e63950;
+    --blue: #1a8cff;
+    --green: #00d084;
+    --text: #e8eaf0;
+    --muted: #6b7a99;
+    --glow: 0 0 30px rgba(245,200,66,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height:100vh; overflow-x:hidden; }
+  
+  /* NOISE OVERLAY */
+  body::before {
+    content:''; position:fixed; top:0; left:0; width:100%; height:100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:0; opacity:0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(5,10,18,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px;
+  }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--gold); letter-spacing:2px; }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display:flex; gap:0.3rem; }
+  .nav-btn {
+    background: none; border:none; color: var(--muted); cursor:pointer;
+    padding: 0.4rem 1rem; border-radius:6px; font-family:'Inter',sans-serif;
+    font-size:0.8rem; font-weight:500; letter-spacing:0.5px; transition:all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active { color: var(--gold); background: rgba(245,200,66,0.08); }
+  .live-badge {
+    display:flex; align-items:center; gap:6px; background: rgba(230,57,80,0.15);
+    border:1px solid rgba(230,57,80,0.3); border-radius:20px; padding:4px 12px;
+    font-size:0.7rem; font-weight:600; color: var(--red); letter-spacing:1px;
+  }
+  .live-dot { width:7px; height:7px; border-radius:50%; background: var(--red); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
+
+  /* SECTIONS */
+  section { display:none; padding: 2rem; max-width:1200px; margin:0 auto; position:relative; z-index:1; }
+  section.active { display:block; }
+
+  /* HERO */
+  .hero {
+    text-align:center; padding: 4rem 2rem 2rem;
+    background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,200,66,0.1) 0%, transparent 70%);
+  }
+  .hero-season { font-size:0.75rem; letter-spacing:4px; color: var(--gold); text-transform:uppercase; margin-bottom:1rem; }
+  .hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,8vw,7rem); line-height:1; color:#fff; }
+  .hero-title span { color: var(--gold); }
+  .hero-sub { color: var(--muted); margin-top:0.5rem; font-size:0.95rem; }
+  .hero-stats { display:flex; justify-content:center; gap:3rem; margin-top:2rem; flex-wrap:wrap; }
+  .hero-stat { text-align:center; }
+  .hero-stat-val { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color: var(--gold); }
+  .hero-stat-lbl { font-size:0.7rem; letter-spacing:2px; color: var(--muted); text-transform:uppercase; }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:1.5rem; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(245,200,66,0.2); box-shadow: var(--glow); }
+  .section-title {
+    font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px;
+    color: var(--gold); margin-bottom:1.5rem; display:flex; align-items:center; gap:0.7rem;
+  }
+  .section-title::after {
+    content:''; flex:1; height:1px; background: linear-gradient(to right, rgba(245,200,66,0.3), transparent);
+  }
+
+  /* PREDICT SECTION */
+  .predict-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:1.5rem; align-items:center; margin-bottom:2rem; }
+  .team-selector { display:flex; flex-direction:column; gap:1rem; }
+  .team-select {
+    appearance:none; background: var(--bg3); border:1px solid var(--border);
+    color: var(--text); padding:1rem 1.5rem; border-radius:10px;
+    font-family:'Rajdhani',sans-serif; font-size:1.1rem; font-weight:600;
+    cursor:pointer; transition:all 0.2s; width:100%;
+  }
+  .team-select:focus { outline:none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,200,66,0.1); }
+  .vs-badge {
+    font-family:'Bebas Neue',sans-serif; font-size:2.5rem; color: var(--red);
+    text-align:center; padding:1rem; background: rgba(230,57,80,0.08);
+    border:1px solid rgba(230,57,80,0.2); border-radius:50%; width:70px; height:70px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .predict-btn {
+    width:100%; padding:1rem 2rem; background: linear-gradient(135deg, var(--gold2), var(--gold));
+    color: #000; font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:2px;
+    border:none; border-radius:10px; cursor:pointer; transition:all 0.2s;
+  }
+  .predict-btn:hover { transform:translateY(-2px); box-shadow: 0 8px 25px rgba(245,200,66,0.3); }
+  .predict-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  /* RESULT CARD */
+  .result-card {
+    display:none; background: linear-gradient(135deg, rgba(245,200,66,0.06), rgba(26,140,255,0.06));
+    border:1px solid rgba(245,200,66,0.2); border-radius:16px; padding:2rem; margin-top:1.5rem;
+  }
+  .result-card.show { display:block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .result-winner { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; color: var(--gold); text-align:center; }
+  .result-sub { text-align:center; color: var(--muted); font-size:0.85rem; margin-top:0.3rem; }
+  .prob-bars { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; }
+  .prob-bar-item { }
+  .prob-label { font-size:0.75rem; color: var(--muted); margin-bottom:0.4rem; display:flex; justify-content:space-between; }
+  .prob-track { height:8px; background: rgba(255,255,255,0.05); border-radius:4px; overflow:hidden; }
+  .prob-fill { height:100%; border-radius:4px; transition:width 1s ease; }
+  .analysis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.8rem; margin-top:1.5rem; }
+  .analysis-item { background: rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:0.8rem; text-align:center; }
+  .analysis-val { font-family:'Rajdhani',sans-serif; font-size:1.1rem; font-weight:700; color: var(--gold); }
+  .analysis-lbl { font-size:0.65rem; color: var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:0.2rem; }
+  .ai-typing { display:none; }
+  .ai-typing.show { display:block; }
+  .thinking-bar {
+    height:3px; background: linear-gradient(to right, var(--gold), var(--blue), var(--red));
+    border-radius:2px; margin:1rem 0; animation: shimmer 1.5s infinite;
+    background-size: 200% 100%;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* POINTS TABLE */
+  .points-table { width:100%; border-collapse:collapse; }
+  .points-table th {
+    background: rgba(245,200,66,0.08); color: var(--gold); font-family:'Rajdhani',sans-serif;
+    font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; padding:0.8rem 1rem;
+    text-align:left; border-bottom:1px solid rgba(245,200,66,0.15);
+  }
+  .points-table td { padding:0.9rem 1rem; border-bottom:1px solid var(--border); font-size:0.9rem; }
+  .points-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .rank-badge {
+    width:28px; height:28px; border-radius:6px; display:flex; align-items:center;
+    justify-content:center; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.85rem;
+  }
+  .rank-1 { background:rgba(245,200,66,0.15); color:var(--gold); border:1px solid rgba(245,200,66,0.3); }
+  .rank-2 { background:rgba(192,192,192,0.1); color:#c0c0c0; border:1px solid rgba(192,192,192,0.2); }
+  .rank-3 { background:rgba(205,127,50,0.1); color:#cd7f32; border:1px solid rgba(205,127,50,0.2); }
+  .rank-4 { background:rgba(0,208,132,0.08); color:var(--green); border:1px solid rgba(0,208,132,0.2); }
+  .rank-other { background:rgba(255,255,255,0.03); color:var(--muted); border:1px solid var(--border); }
+  .team-cell { display:flex; align-items:center; gap:0.7rem; }
+  .team-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .nrr-pos { color: var(--green); }
+  .nrr-neg { color: var(--red); }
+  .pts-bold { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1rem; color: var(--gold); }
+  .playoff-line td { border-bottom: 2px solid rgba(0,208,132,0.3) !important; }
+
+  /* PLAYING XI */
+  .xi-team-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+  .xi-tab {
+    padding:0.4rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:500;
+    cursor:pointer; border:1px solid var(--border); background:none; color:var(--muted); transition:all 0.2s;
+  }
+  .xi-tab.active { background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.4); color: var(--gold); }
+  .xi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:0.8rem; }
+  .xi-player {
+    background: var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:1rem; transition:all 0.2s; cursor:default;
+  }
+  .xi-player:hover { border-color: rgba(245,200,66,0.3); transform:translateY(-2px); }
+  .xi-player-name { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:0.95rem; margin-bottom:0.2rem; }
+  .xi-player-role { font-size:0.7rem; color: var(--muted); }
+  .xi-player-flag { font-size:0.85rem; }
+  .role-bat { color: #1a8cff; }
+  .role-bowl { color: var(--red); }
+  .role-ar { color: var(--green); }
+  .role-wk { color: var(--gold); }
+  .xi-captain { font-size:0.65rem; color: var(--gold); letter-spacing:1px; margin-top:0.3rem; }
+
+  /* TOSS SECTION */
+  .toss-container { text-align:center; padding:2rem 0; }
+  .coin-wrapper { display:inline-block; perspective:600px; margin:2rem 0; cursor:pointer; }
+  .coin {
+    width:130px; height:130px; border-radius:50%; position:relative;
+    transform-style:preserve-3d; transition:transform 1.2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .coin.flipping { animation:coinFlip 1.5s ease forwards; }
+  @keyframes coinFlip {
+    0%{transform:rotateY(0)} 25%{transform:rotateY(900deg)} 50%{transform:rotateY(1800deg)}
+    75%{transform:rotateY(2700deg)} 100%{transform:rotateY(var(--final-rot,3600deg))}
+  }
+  .coin-face, .coin-back {
+    position:absolute; width:100%; height:100%; border-radius:50%;
+    backface-visibility:hidden; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:0.3rem;
+  }
+  .coin-face { background: linear-gradient(135deg, #d4af37, #f5c842, #b8961e); box-shadow: 0 0 30px rgba(245,200,66,0.4); }
+  .coin-back { background: linear-gradient(135deg, #1a2a3a, #2a3f58); transform:rotateY(180deg); border:3px solid rgba(245,200,66,0.3); }
+  .coin-face-text, .coin-back-text { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:#000; letter-spacing:1px; }
+  .coin-back .coin-back-text { color: var(--gold); }
+  .toss-teams { display:flex; gap:2rem; justify-content:center; margin-bottom:1.5rem; flex-wrap:wrap; }
+  .toss-team-btn {
+    padding:0.8rem 2rem; border-radius:10px; font-family:'Rajdhani',sans-serif;
+    font-size:1rem; font-weight:600; cursor:pointer; border:1px solid var(--border);
+    background: var(--bg3); color: var(--text); transition:all 0.2s; letter-spacing:1px;
+  }
+  .toss-team-btn.selected { border-color: var(--gold); background: rgba(245,200,66,0.1); color: var(--gold); }
+  .toss-flip-btn {
+    padding:0.9rem 3rem; background: linear-gradient(135deg,#e63950,#c02030);
+    color:#fff; border:none; border-radius:10px; font-family:'Bebas Neue',sans-serif;
+    font-size:1.4rem; letter-spacing:2px; cursor:pointer; transition:all 0.2s;
+  }
+  .toss-flip-btn:hover { transform:translateY(-2px); box-shadow: 0 8px 25px rgba(230,57,80,0.3); }
+  .toss-result { font-family:'Bebas Neue',sans-serif; font-size:2rem; color: var(--gold); margin-top:1.5rem; min-height:2.5rem; }
+  .toss-detail { color: var(--muted); font-size:0.9rem; margin-top:0.5rem; }
+
+  /* LIVE SCORE */
+  .live-match-card {
+    background: linear-gradient(135deg, rgba(26,140,255,0.05), rgba(0,208,132,0.05));
+    border:1px solid rgba(26,140,255,0.2); border-radius:16px; padding:1.5rem; margin-bottom:1rem;
+  }
+  .live-match-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  .live-match-teams { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:#fff; }
+  .live-match-venue { font-size:0.75rem; color: var(--muted); }
+  .score-main { display:grid; grid-template-columns:1fr auto 1fr; gap:1rem; align-items:center; margin:1rem 0; }
+  .score-team { }
+  .score-name { font-size:0.8rem; color: var(--muted); margin-bottom:0.3rem; letter-spacing:1px; text-transform:uppercase; }
+  .score-runs { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; color:#fff; line-height:1; }
+  .score-overs { font-size:0.85rem; color: var(--muted); }
+  .score-center { text-align:center; }
+  .crr-badge { background: rgba(0,208,132,0.1); border:1px solid rgba(0,208,132,0.2); border-radius:6px; padding:0.4rem 0.8rem; font-size:0.75rem; color: var(--green); }
+  .batting-info { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
+  .bat-item { font-size:0.8rem; }
+  .bat-name { color:#fff; font-weight:500; }
+  .bat-stats { color: var(--muted); }
+  .recent-balls { display:flex; gap:0.4rem; margin-top:0.8rem; flex-wrap:wrap; }
+  .ball {
+    width:28px; height:28px; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:0.7rem; font-weight:700;
+  }
+  .ball-0 { background:rgba(255,255,255,0.07); color:var(--muted); }
+  .ball-1,.ball-2,.ball-3 { background:rgba(255,255,255,0.1); color:#fff; }
+  .ball-4 { background:rgba(26,140,255,0.2); color:var(--blue); border:1px solid rgba(26,140,255,0.3); }
+  .ball-6 { background:rgba(0,208,132,0.2); color:var(--green); border:1px solid rgba(0,208,132,0.3); }
+  .ball-w { background:rgba(230,57,80,0.2); color:var(--red); border:1px solid rgba(230,57,80,0.3); }
+  .refresh-btn {
+    padding:0.5rem 1.2rem; background: rgba(26,140,255,0.1); border:1px solid rgba(26,140,255,0.2);
+    color: var(--blue); border-radius:8px; cursor:pointer; font-size:0.8rem; transition:all 0.2s;
+  }
+  .refresh-btn:hover { background: rgba(26,140,255,0.2); }
+  .upcoming-match { background: var(--bg3); border:1px solid var(--border); border-radius:10px; padding:1rem 1.5rem; margin-bottom:0.8rem; display:flex; justify-content:space-between; align-items:center; }
+  .upcoming-teams { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:1rem; }
+  .upcoming-meta { font-size:0.75rem; color: var(--muted); margin-top:0.2rem; }
+  .upcoming-time { font-family:'Rajdhani',sans-serif; font-weight:700; color: var(--gold); font-size:0.9rem; }
+
+  /* SCHEDULE */
+  .schedule-filters { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+  .filter-btn {
+    padding:0.4rem 1rem; border-radius:20px; font-size:0.78rem; cursor:pointer;
+    border:1px solid var(--border); background:none; color:var(--muted); transition:all 0.2s;
+  }
+  .filter-btn.active { background:rgba(245,200,66,0.1); border-color:rgba(245,200,66,0.4); color:var(--gold); }
+  .match-row {
+    display:grid; grid-template-columns:80px 1fr auto; gap:1rem; align-items:center;
+    padding:1rem 1.5rem; border-bottom:1px solid var(--border); transition:background 0.15s;
+  }
+  .match-row:hover { background: rgba(255,255,255,0.02); }
+  .match-date { font-size:0.75rem; color: var(--muted); text-align:center; }
+  .match-date-day { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.2rem; color:var(--text); }
+  .match-teams { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:1rem; }
+  .match-venue { font-size:0.73rem; color: var(--muted); margin-top:0.2rem; }
+  .match-time { font-size:0.78rem; color: var(--gold); font-weight:500; }
+
+  /* RESPONSIVE */
+  @media(max-width:640px) {
+    nav { padding:0 1rem; }
+    .nav-links { display:none; }
+    section { padding:1.5rem 1rem; }
+    .predict-grid { grid-template-columns:1fr; }
+    .vs-badge { margin:0 auto; }
+    .score-main { grid-template-columns:1fr 1fr; }
+    .score-center { display:none; }
+    .match-row { grid-template-columns:60px 1fr; }
+    .match-time { display:none; }
+    .hero-stats { gap:1.5rem; }
+  }
+
+  /* TEAM COLORS */
+  .rcb { color:#C41E3A } .mi { color:#005DA0 } .csk { color:#FDB913 }
+  .kkr { color:#4B0082 } .srh { color:#FF6900 } .dc { color:#0057A8 }
+  .rr { color:#E91E63 } .gt { color:#1C1C6E } .pbks { color:#ED1B24 } .lsg { color:#A2D4F5 }
+  .dot-rcb{background:#C41E3A} .dot-mi{background:#005DA0} .dot-csk{background:#FDB913}
+  .dot-kkr{background:#4B0082} .dot-srh{background:#FF6900} .dot-dc{background:#0057A8}
+  .dot-rr{background:#E91E63} .dot-gt{background:#1C1C6E} .dot-pbks{background:#ED1B24} .dot-lsg{background:#A2D4F5}
+
+  .mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:100; background: var(--bg2); border-top:1px solid var(--border); padding:0.5rem; display:flex; justify-content:space-around; }
+  @media(min-width:641px) { .mobile-nav { display:none !important; } }
+  @media(max-width:640px) { .mobile-nav { display:flex; } body { padding-bottom:70px; } }
+  .mob-nav-btn { background:none; border:none; color:var(--muted); cursor:pointer; padding:0.3rem; text-align:center; font-size:0.6rem; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .mob-nav-btn.active { color:var(--gold); }
+  .mob-icon { font-size:1.2rem; }
+
+  .section-sub { color: var(--muted); font-size:0.85rem; margin-top:-1rem; margin-bottom:1.5rem; }
+  .ai-response-box { background: rgba(26,140,255,0.04); border:1px solid rgba(26,140,255,0.15); border-radius:12px; padding:1.2rem; margin-top:1rem; font-size:0.88rem; line-height:1.7; color: var(--text); }
+  .ai-label { font-size:0.7rem; color: var(--blue); letter-spacing:2px; text-transform:uppercase; margin-bottom:0.5rem; }
+
+  /* Spinner */
+  .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">IPL <span>2026</span></div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showSection('home')">🏠 Home</button>
+    <button class="nav-btn" onclick="showSection('predict')">🔮 Predict</button>
+    <button class="nav-btn" onclick="showSection('points')">📊 Points Table</button>
+    <button class="nav-btn" onclick="showSection('xi')">👕 Playing XI</button>
+    <button class="nav-btn" onclick="showSection('toss')">🪙 Toss</button>
+    <button class="nav-btn" onclick="showSection('live')">📺 Live Score</button>
+    <button class="nav-btn" onclick="showSection('schedule')">📅 Schedule</button>
+  </div>
+  <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="active">
+  <div class="hero">
+    <div class="hero-season">TATA IPL 2026 · Season 19</div>
+    <div class="hero-title">THE BIGGEST<br><span>T20 LEAGUE</span></div>
+    <div class="hero-sub">28 March – 31 May 2026 · Bengaluru hosts Opening & Final</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val">10</div><div class="hero-stat-lbl">Teams</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">84</div><div class="hero-stat-lbl">Matches</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">65</div><div class="hero-stat-lbl">Days</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">18</div><div class="hero-stat-lbl">Venues</div></div>
+    </div>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:2rem;">
+    <div class="card" style="cursor:pointer" onclick="showSection('predict')">
+      <div style="font-size:2rem; margin-bottom:0.5rem">🔮</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:0.3rem">AI Predictor</div>
+      <div style="font-size:0.8rem; color:var(--muted)">Select two teams and get AI-powered match prediction with win probability</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('points')">
+      <div style="font-size:2rem; margin-bottom:0.5rem">📊</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:0.3rem">Points Table</div>
+      <div style="font-size:0.8rem; color:var(--muted)">Live standings, NRR, wins & losses for all 10 teams</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('xi')">
+      <div style="font-size:2rem; margin-bottom:0.5rem">👕</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:0.3rem">Playing XI</div>
+      <div style="font-size:0.8rem; color:var(--muted)">Probable playing XIs for all 10 IPL 2026 teams</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('toss')">
+      <div style="font-size:2rem; margin-bottom:0.5rem">🪙</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:0.3rem">Toss Simulator</div>
+      <div style="font-size:0.8rem; color:var(--muted)">Flip the coin and decide who bats first</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('live')">
+      <div style="font-size:2rem; margin-bottom:0.5rem">📺</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:0.3rem">Live Score</div>
+      <div style="font-size:0.8rem; color:var(--muted)">Real-time scorecard with ball-by-ball updates</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="showSection('schedule')">
+      <div style="font-size:2rem; margin-bottom:0.5rem">📅</div>
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1rem; margin-bottom:0.3rem">Schedule</div>
+      <div style="font-size:0.8rem; color:var(--muted)">Full fixture list for IPL 2026 Phase 1 & beyond</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem;">
+    <div class="section-title">🏆 Defending Champions</div>
+    <div class="card" style="background: linear-gradient(135deg, rgba(196,30,58,0.1), rgba(0,0,0,0)); border-color:rgba(196,30,58,0.3)">
+      <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap">
+        <div style="font-size:4rem">🏆</div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:#C41E3A">Royal Challengers Bengaluru</div>
+          <div style="color:var(--muted); font-size:0.85rem">IPL 2025 Champions · First-ever title after 18 years</div>
+          <div style="margin-top:0.5rem; font-size:0.8rem">Captain: <span style="color:var(--gold)">Rajat Patidar</span> · Home: M. Chinnaswamy Stadium, Bengaluru</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem;">
+    <div class="section-title">⚡ Key Trades This Season</div>
+    <div style="display:grid; gap:0.7rem">
+      <div class="card"><span style="color:var(--gold)">Sanju Samson</span> → CSK from RR <span style="color:var(--muted); font-size:0.8rem">(in exchange for Ravindra Jadeja + Sam Curran)</span></div>
+      <div class="card"><span style="color:var(--gold)">Cameron Green</span> → KKR · ₹25.20 Cr <span style="color:var(--muted); font-size:0.8rem">(most expensive overseas player in IPL history)</span></div>
+      <div class="card"><span style="color:var(--gold)">Matheesha Pathirana</span> → KKR · ₹18 Cr <span style="color:var(--muted); font-size:0.8rem"></span></div>
+      <div class="card"><span style="color:var(--gold)">Prashant Veer & Kartik Sharma</span> → CSK · ₹14.20 Cr each <span style="color:var(--muted); font-size:0.8rem">(joint most expensive uncapped players)</span></div>
+      <div class="card"><span style="color:var(--gold)">Mohammed Shami</span> → LSG (traded from SRH)</div>
+    </div>
+  </div>
+</section>
+
+<!-- PREDICT -->
+<section id="predict">
+  <div class="section-title">🔮 Match Predictor</div>
+  <p class="section-sub">Select two teams and let AI analyze the matchup using IPL 2026 squads, form, and history</p>
+  <div class="card">
+    <div class="predict-grid">
+      <div class="team-selector">
+        <label style="font-size:0.75rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase">Team 1</label>
+        <select class="team-select" id="team1Select">
+          <option value="">Select Team</option>
+          <option value="RCB">🏏 Royal Challengers Bengaluru</option>
+          <option value="MI">🏏 Mumbai Indians</option>
+          <option value="CSK">🏏 Chennai Super Kings</option>
+          <option value="KKR">🏏 Kolkata Knight Riders</option>
+          <option value="SRH">🏏 Sunrisers Hyderabad</option>
+          <option value="DC">🏏 Delhi Capitals</option>
+          <option value="RR">🏏 Rajasthan Royals</option>
+          <option value="GT">🏏 Gujarat Titans</option>
+          <option value="PBKS">🏏 Punjab Kings</option>
+          <option value="LSG">🏏 Lucknow Super Giants</option>
+        </select>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="team-selector">
+        <label style="font-size:0.75rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase">Team 2</label>
+        <select class="team-select" id="team2Select">
+          <option value="">Select Team</option>
+          <option value="RCB">🏏 Royal Challengers Bengaluru</option>
+          <option value="MI">🏏 Mumbai Indians</option>
+          <option value="CSK">🏏 Chennai Super Kings</option>
+          <option value="KKR">🏏 Kolkata Knight Riders</option>
+          <option value="SRH">🏏 Sunrisers Hyderabad</option>
+          <option value="DC">🏏 Delhi Capitals</option>
+          <option value="RR">🏏 Rajasthan Royals</option>
+          <option value="GT">🏏 Gujarat Titans</option>
+          <option value="PBKS">🏏 Punjab Kings</option>
+          <option value="LSG">🏏 Lucknow Super Giants</option>
+        </select>
+      </div>
+    </div>
+    <button class="predict-btn" id="predictBtn" onclick="runPrediction()">⚡ PREDICT WINNER</button>
+    <div class="ai-typing" id="aiTyping">
+      <div style="margin-top:1.2rem; color:var(--muted); font-size:0.85rem; display:flex; align-items:center; gap:0.5rem">
+        <div class="spinner"></div> AI analyzing squads, form & match history...
+      </div>
+      <div class="thinking-bar"></div>
+    </div>
+    <div class="result-card" id="resultCard">
+      <div class="result-winner" id="resultWinner"></div>
+      <div class="result-sub" id="resultSub"></div>
+      <div class="prob-bars" id="probBars"></div>
+      <div class="analysis-grid" id="analysisGrid"></div>
+      <div class="ai-response-box" id="aiResponse">
+        <div class="ai-label">🤖 AI Analysis</div>
+        <div id="aiResponseText"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POINTS TABLE -->
+<section id="points">
+  <div class="section-title">📊 IPL 2026 Points Table</div>
+  <p class="section-sub">Season starts 28 March 2026 · Top 4 qualify for playoffs</p>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <table class="points-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Team</th><th>P</th><th>W</th><th>L</th><th>NR</th><th>NRR</th><th>PTS</th>
+        </tr>
+      </thead>
+      <tbody id="pointsTableBody"></tbody>
+    </table>
+  </div>
+  <div style="margin-top:1rem; font-size:0.75rem; color:var(--muted); display:flex; gap:1.5rem; flex-wrap:wrap">
+    <span>🟢 Top 4 qualify for playoffs</span>
+    <span>P = Played · W = Won · L = Lost · NR = No Result · NRR = Net Run Rate · PTS = Points</span>
+  </div>
+  <div style="margin-top:1.5rem; font-size:0.78rem; color:var(--muted); background:rgba(245,200,66,0.04); border:1px solid rgba(245,200,66,0.1); border-radius:8px; padding:0.8rem 1rem">
+    ⚠️ Points table will be updated live as matches are played. Season opener: <strong style="color:var(--gold)">RCB vs SRH on 28 March 2026</strong>
+  </div>
+</section>
+
+<!-- PLAYING XI -->
+<section id="xi">
+  <div class="section-title">👕 Playing XI</div>
+  <p class="section-sub">Probable playing elevens based on IPL 2026 squads</p>
+  <div class="xi-team-tabs" id="xiTabs"></div>
+  <div class="xi-grid" id="xiGrid"></div>
+  <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap; font-size:0.75rem">
+    <span><span class="role-bat">◉</span> Batsman</span>
+    <span><span class="role-bowl">◉</span> Bowler</span>
+    <span><span class="role-ar">◉</span> All-Rounder</span>
+    <span><span class="role-wk">◉</span> Wicket-Keeper</span>
+  </div>
+</section>
+
+<!-- TOSS -->
+<section id="toss">
+  <div class="section-title">🪙 Toss Simulator</div>
+  <p class="section-sub">Select your teams and flip the coin to simulate the IPL 2026 toss</p>
+  <div class="card toss-container">
+    <div style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem">Select the two teams for the toss:</div>
+    <div class="toss-teams" id="tossTeams"></div>
+    <div class="coin-wrapper" id="coinWrapper" onclick="flipCoin()">
+      <div class="coin" id="coin">
+        <div class="coin-face">
+          <div style="font-size:2rem">🏏</div>
+          <div class="coin-face-text">HEADS</div>
+        </div>
+        <div class="coin-back">
+          <div style="font-size:2rem">🏆</div>
+          <div class="coin-back-text">TAILS</div>
+        </div>
+      </div>
+    </div>
+    <div style="color:var(--muted); font-size:0.8rem; margin-bottom:1rem">Click the coin to flip</div>
+    <button class="toss-flip-btn" onclick="flipCoin()">🪙 FLIP COIN</button>
+    <div class="toss-result" id="tossResult"></div>
+    <div class="toss-detail" id="tossDetail"></div>
+  </div>
+</section>
+
+<!-- LIVE SCORE -->
+<section id="live">
+  <div class="section-title">📺 Live Score</div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem">
+    <p style="color:var(--muted); font-size:0.85rem">Season begins March 28, 2026 · Updates every 30 seconds during live matches</p>
+    <button class="refresh-btn" onclick="refreshScore()">↻ Refresh</button>
+  </div>
+  <div id="liveContent"></div>
+  <div style="margin-top:2rem">
+    <div class="section-title" style="font-size:1.3rem">Upcoming Matches</div>
+    <div id="upcomingMatches"></div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="section-title">📅 IPL 2026 Schedule</div>
+  <div class="schedule-filters">
+    <button class="filter-btn active" onclick="filterSchedule('all', this)">All</button>
+    <button class="filter-btn" onclick="filterSchedule('RCB',this)">RCB</button>
+    <button class="filter-btn" onclick="filterSchedule('MI',this)">MI</button>
+    <button class="filter-btn" onclick="filterSchedule('CSK',this)">CSK</button>
+    <button class="filter-btn" onclick="filterSchedule('KKR',this)">KKR</button>
+    <button class="filter-btn" onclick="filterSchedule('SRH',this)">SRH</button>
+    <button class="filter-btn" onclick="filterSchedule('DC',this)">DC</button>
+    <button class="filter-btn" onclick="filterSchedule('RR',this)">RR</button>
+    <button class="filter-btn" onclick="filterSchedule('GT',this)">GT</button>
+    <button class="filter-btn" onclick="filterSchedule('PBKS',this)">PBKS</button>
+    <button class="filter-btn" onclick="filterSchedule('LSG',this)">LSG</button>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div id="scheduleList"></div>
+  </div>
+</section>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <button class="mob-nav-btn active" onclick="showSection('home')"><span class="mob-icon">🏠</span>Home</button>
+  <button class="mob-nav-btn" onclick="showSection('predict')"><span class="mob-icon">🔮</span>Predict</button>
+  <button class="mob-nav-btn" onclick="showSection('points')"><span class="mob-icon">📊</span>Points</button>
+  <button class="mob-nav-btn" onclick="showSection('xi')"><span class="mob-icon">👕</span>XI</button>
+  <button class="mob-nav-btn" onclick="showSection('toss')"><span class="mob-icon">🪙</span>Toss</button>
+  <button class="mob-nav-btn" onclick="showSection('live')"><span class="mob-icon">📺</span>Live</button>
+</div>
+
+<script>
+// ===== DATA =====
+const TEAMS = {
+  RCB:  { name:"Royal Challengers Bengaluru", short:"RCB", color:"#C41E3A", cls:"rcb", captain:"Rajat Patidar", home:"M. Chinnaswamy Stadium, Bengaluru", titles:1, strength:88 },
+  MI:   { name:"Mumbai Indians", short:"MI", color:"#005DA0", cls:"mi", captain:"Hardik Pandya", home:"Wankhede Stadium, Mumbai", titles:5, strength:90 },
+  CSK:  { name:"Chennai Super Kings", short:"CSK", color:"#FDB913", cls:"csk", captain:"Ruturaj Gaikwad", home:"MA Chidambaram Stadium, Chennai", titles:5, strength:89 },
+  KKR:  { name:"Kolkata Knight Riders", short:"KKR", color:"#4B0082", cls:"kkr", captain:"Ajinkya Rahane", home:"Eden Gardens, Kolkata", titles:3, strength:85 },
+  SRH:  { name:"Sunrisers Hyderabad", short:"SRH", color:"#FF6900", cls:"srh", captain:"Pat Cummins", home:"Rajiv Gandhi Intl. Stadium, Hyderabad", titles:1, strength:86 },
+  DC:   { name:"Delhi Capitals", short:"DC", color:"#0057A8", cls:"dc", captain:"KL Rahul", home:"Arun Jaitley Stadium, Delhi", titles:0, strength:82 },
+  RR:   { name:"Rajasthan Royals", short:"RR", color:"#E91E63", cls:"rr", captain:"Ravindra Jadeja", home:"Sawai Mansingh Stadium, Jaipur", titles:1, strength:83 },
+  GT:   { name:"Gujarat Titans", short:"GT", color:"#1C1C6E", cls:"gt", captain:"Shubman Gill", home:"Narendra Modi Stadium, Ahmedabad", titles:2, strength:91 },
+  PBKS: { name:"Punjab Kings", short:"PBKS", color:"#ED1B24", cls:"pbks", captain:"Shreyas Iyer", home:"PCA Stadium, Mullanpur", titles:0, strength:84 },
+  LSG:  { name:"Lucknow Super Giants", short:"LSG", color:"#A2D4F5", cls:"lsg", captain:"Rishabh Pant", home:"BRSABV Ekana Stadium, Lucknow", titles:0, strength:87 },
+};
+
+const PLAYING_XI = {
+  RCB: [
+    {name:"Virat Kohli", role:"BAT", flag:"🇮🇳"},{name:"Phil Salt", role:"WK", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+    {name:"Rajat Patidar", role:"BAT", flag:"🇮🇳", c:true},{name:"Jacob Bethell", role:"AR", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+    {name:"Romario Shepherd", role:"AR", flag:"🇬🇾"},{name:"Bhuvneshwar Kumar", role:"BOWL", flag:"🇮🇳"},
+    {name:"Josh Hazlewood", role:"BOWL", flag:"🇦🇺"},{name:"Yash Dayal", role:"BOWL", flag:"🇮🇳"},
+    {name:"Jacob Duffy", role:"BOWL", flag:"🇳🇿"},{name:"Swapnil Singh", role:"AR", flag:"🇮🇳"},
+    {name:"Luyanda Gcaba", role:"BOWL", flag:"🇿🇦"},
+  ],
+  MI: [
+    {name:"Rohit Sharma", role:"BAT", flag:"🇮🇳"},{name:"Suryakumar Yadav", role:"BAT", flag:"🇮🇳"},
+    {name:"Quinton de Kock", role:"WK", flag:"🇿🇦"},{name:"Hardik Pandya", role:"AR", flag:"🇮🇳", c:true},
+    {name:"Tilak Varma", role:"BAT", flag:"🇮🇳"},{name:"Ryan Rickelton", role:"WK", flag:"🇿🇦"},
+    {name:"Jasprit Bumrah", role:"BOWL", flag:"🇮🇳"},{name:"Trent Boult", role:"BOWL", flag:"🇳🇿"},
+    {name:"Karn Sharma", role:"BOWL", flag:"🇮🇳"},{name:"Shardul Thakur", role:"AR", flag:"🇮🇳"},
+    {name:"Deepak Chahar", role:"BOWL", flag:"🇮🇳"},
+  ],
+  CSK: [
+    {name:"Ruturaj Gaikwad", role:"BAT", flag:"🇮🇳", c:true},{name:"Sanju Samson", role:"WK", flag:"🇮🇳"},
+    {name:"MS Dhoni", role:"WK", flag:"🇮🇳"},{name:"Ayush Mhatre", role:"BAT", flag:"🇮🇳"},
+    {name:"Dewald Brevis", role:"BAT", flag:"🇿🇦"},{name:"Shivam Dube", role:"AR", flag:"🇮🇳"},
+    {name:"Khaleel Ahmed", role:"BOWL", flag:"🇮🇳"},{name:"Noor Ahmad", role:"BOWL", flag:"🇦🇫"},
+    {name:"Anshul Kamboj", role:"BOWL", flag:"🇮🇳"},{name:"Prashant Veer", role:"BOWL", flag:"🇮🇳"},
+    {name:"Matthew Short", role:"AR", flag:"🇦🇺"},
+  ],
+  KKR: [
+    {name:"Ajinkya Rahane", role:"BAT", flag:"🇮🇳", c:true},{name:"Sunil Narine", role:"AR", flag:"🇹🇹"},
+    {name:"Angkrish Raghuvanshi", role:"BAT", flag:"🇮🇳"},{name:"Cameron Green", role:"AR", flag:"🇦🇺"},
+    {name:"Rinku Singh", role:"BAT", flag:"🇮🇳"},{name:"Rovman Powell", role:"BAT", flag:"🇯🇲"},
+    {name:"Ramandeep Singh", role:"AR", flag:"🇮🇳"},{name:"Varun Chakravarthy", role:"BOWL", flag:"🇮🇳"},
+    {name:"Harshit Rana", role:"BOWL", flag:"🇮🇳"},{name:"Blessing Muzarabani", role:"BOWL", flag:"🇿🇼"},
+    {name:"Finn Allen", role:"WK", flag:"🇳🇿"},
+  ],
+  SRH: [
+    {name:"Travis Head", role:"BAT", flag:"🇦🇺"},{name:"Pat Cummins", role:"AR", flag:"🇦🇺", c:true},
+    {name:"Heinrich Klaasen", role:"WK", flag:"🇿🇦"},{name:"Abhishek Sharma", role:"BAT", flag:"🇮🇳"},
+    {name:"Liam Livingstone", role:"AR", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{name:"Nitish Reddy", role:"AR", flag:"🇮🇳"},
+    {name:"Adam Zampa", role:"BOWL", flag:"🇦🇺"},{name:"Harshal Patel", role:"BOWL", flag:"🇮🇳"},
+    {name:"T Natarajan", role:"BOWL", flag:"🇮🇳"},{name:"Wanindu Hasaranga", role:"BOWL", flag:"🇱🇰"},
+    {name:"Aiden Markram", role:"BAT", flag:"🇿🇦"},
+  ],
+  DC: [
+    {name:"KL Rahul", role:"WK", flag:"🇮🇳", c:true},{name:"Axar Patel", role:"AR", flag:"🇮🇳"},
+    {name:"Kuldeep Yadav", role:"BOWL", flag:"🇮🇳"},{name:"Mitchell Starc", role:"BOWL", flag:"🇦🇺"},
+    {name:"Tristan Stubbs", role:"BAT", flag:"🇿🇦"},{name:"Abhishek Porel", role:"WK", flag:"🇮🇳"},
+    {name:"Karun Nair", role:"BAT", flag:"🇮🇳"},{name:"T Natarajan", role:"BOWL", flag:"🇮🇳"},
+    {name:"Sameer Rizvi", role:"BAT", flag:"🇮🇳"},{name:"Ben Duckett", role:"BAT", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+    {name:"Lungi Ngidi", role:"BOWL", flag:"🇿🇦"},
+  ],
+  RR: [
+    {name:"Ravindra Jadeja", role:"AR", flag:"🇮🇳", c:true},{name:"Yashasvi Jaiswal", role:"BAT", flag:"🇮🇳"},
+    {name:"Vaibhav Suryavanshi", role:"BAT", flag:"🇮🇳"},{name:"Shimron Hetmyer", role:"BAT", flag:"🇬🇾"},
+    {name:"Dhruv Jurel", role:"WK", flag:"🇮🇳"},{name:"Yuzvendra Chahal", role:"BOWL", flag:"🇮🇳"},
+    {name:"Sandeep Sharma", role:"BOWL", flag:"🇮🇳"},{name:"Kumar Kartikeya", role:"BOWL", flag:"🇮🇳"},
+    {name:"Maheesh Theekshana", role:"BOWL", flag:"🇱🇰"},{name:"Akash Madhwal", role:"BOWL", flag:"🇮🇳"},
+    {name:"Shubham Dubey", role:"AR", flag:"🇮🇳"},
+  ],
+  GT: [
+    {name:"Shubman Gill", role:"BAT", flag:"🇮🇳", c:true},{name:"Jos Buttler", role:"WK", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+    {name:"Rashid Khan", role:"BOWL", flag:"🇦🇫"},{name:"Kagiso Rabada", role:"BOWL", flag:"🇿🇦"},
+    {name:"Mohammed Siraj", role:"BOWL", flag:"🇮🇳"},{name:"B Sai Sudharsan", role:"BAT", flag:"🇮🇳"},
+    {name:"Washington Sundar", role:"AR", flag:"🇮🇳"},{name:"Rahul Tewatia", role:"AR", flag:"🇮🇳"},
+    {name:"R Sai Kishore", role:"BOWL", flag:"🇮🇳"},{name:"Prasidh Krishna", role:"BOWL", flag:"🇮🇳"},
+    {name:"Glenn Phillips", role:"AR", flag:"🇳🇿"},
+  ],
+  PBKS: [
+    {name:"Shreyas Iyer", role:"BAT", flag:"🇮🇳", c:true},{name:"Prabhsimran Singh", role:"WK", flag:"🇮🇳"},
+    {name:"Rilee Rossouw", role:"BAT", flag:"🇿🇦"},{name:"Arshdeep Singh", role:"BOWL", flag:"🇮🇳"},
+    {name:"Sam Curran", role:"AR", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{name:"Liam Livingstone", role:"AR", flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+    {name:"Harnoor Singh", role:"BAT", flag:"🇮🇳"},{name:"Yudhvir Singh", role:"BOWL", flag:"🇮🇳"},
+    {name:"Glenn Maxwell", role:"AR", flag:"🇦🇺"},{name:"Kuldeep Sen", role:"BOWL", flag:"🇮🇳"},
+    {name:"Cooper Connolly", role:"AR", flag:"🇦🇺"},
+  ],
+  LSG: [
+    {name:"Rishabh Pant", role:"WK", flag:"🇮🇳", c:true},{name:"Nicholas Pooran", role:"WK", flag:"🇹🇹"},
+    {name:"Mitchell Marsh", role:"AR", flag:"🇦🇺"},{name:"Avesh Khan", role:"BOWL", flag:"🇮🇳"},
+    {name:"Mohammed Shami", role:"BOWL", flag:"🇮🇳"},{name:"Mayank Yadav", role:"BOWL", flag:"🇮🇳"},
+    {name:"Abdul Samad", role:"BAT", flag:"🇮🇳"},{name:"Ayush Badoni", role:"BAT", flag:"🇮🇳"},
+    {name:"Digvesh Rathi", role:"BOWL", flag:"🇮🇳"},{name:"Mohsin Khan", role:"BOWL", flag:"🇮🇳"},
+    {name:"Arshin Kulkarni", role:"BAT", flag:"🇮🇳"},
+  ],
+};
+
+const SCHEDULE = [
+  {date:"28 Mar", day:"Sat", t1:"RCB", t2:"SRH", venue:"M. Chinnaswamy Stadium, Bengaluru", time:"7:30 PM"},
+  {date:"29 Mar", day:"Sun", t1:"MI", t2:"KKR", venue:"Wankhede Stadium, Mumbai", time:"3:30 PM"},
+  {date:"29 Mar", day:"Sun", t1:"CSK", t2:"RR", venue:"Barsapara Cricket Stadium, Guwahati", time:"7:30 PM"},
+  {date:"30 Mar", day:"Mon", t1:"GT", t2:"DC", venue:"Narendra Modi Stadium, Ahmedabad", time:"7:30 PM"},
+  {date:"31 Mar", day:"Tue", t1:"PBKS", t2:"LSG", venue:"PCA Stadium, Mullanpur", time:"7:30 PM"},
+  {date:"1 Apr", day:"Wed", t1:"SRH", t2:"MI", venue:"Rajiv Gandhi Intl. Stadium, Hyderabad", time:"7:30 PM"},
+  {date:"2 Apr", day:"Thu", t1:"RR", t2:"GT", venue:"Sawai Mansingh Stadium, Jaipur", time:"7:30 PM"},
+  {date:"3 Apr", day:"Fri", t1:"KKR", t2:"CSK", venue:"Eden Gardens, Kolkata", time:"7:30 PM"},
+  {date:"4 Apr", day:"Sat", t1:"RCB", t2:"PBKS", venue:"M. Chinnaswamy Stadium, Bengaluru", time:"3:30 PM"},
+  {date:"4 Apr", day:"Sat", t1:"DC", t2:"LSG", venue:"Arun Jaitley Stadium, Delhi", time:"7:30 PM"},
+  {date:"5 Apr", day:"Sun", t1:"MI", t2:"GT", venue:"Wankhede Stadium, Mumbai", time:"3:30 PM"},
+  {date:"5 Apr", day:"Sun", t1:"SRH", t2:"CSK", venue:"Rajiv Gandhi Intl. Stadium, Hyderabad", time:"7:30 PM"},
+  {date:"6 Apr", day:"Mon", t1:"RR", t2:"PBKS", venue:"Sawai Mansingh Stadium, Jaipur", time:"7:30 PM"},
+  {date:"7 Apr", day:"Tue", t1:"LSG", t2:"KKR", venue:"Ekana Stadium, Lucknow", time:"7:30 PM"},
+  {date:"8 Apr", day:"Wed", t1:"RCB", t2:"DC", venue:"M. Chinnaswamy Stadium, Bengaluru", time:"7:30 PM"},
+  {date:"9 Apr", day:"Thu", t1:"GT", t2:"CSK", venue:"Narendra Modi Stadium, Ahmedabad", time:"7:30 PM"},
+  {date:"10 Apr", day:"Fri", t1:"MI", t2:"SRH", venue:"Wankhede Stadium, Mumbai", time:"7:30 PM"},
+  {date:"11 Apr", day:"Sat", t1:"KKR", t2:"RR", venue:"Eden Gardens, Kolkata", time:"3:30 PM"},
+  {date:"11 Apr", day:"Sat", t1:"PBKS", t2:"DC", venue:"PCA Stadium, Mullanpur", time:"7:30 PM"},
+  {date:"12 Apr", day:"Sun", t1:"LSG", t2:"RCB", venue:"Ekana Stadium, Lucknow", time:"7:30 PM"},
+];
+
+// POINTS TABLE DATA (pre-season)
+const pointsData = [
+  {rank:1, team:"GT", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:2, team:"MI", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:3, team:"CSK", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:4, team:"RCB", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:5, team:"LSG", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:6, team:"SRH", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:7, team:"KKR", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:8, team:"PBKS", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:9, team:"RR", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+  {rank:10, team:"DC", p:0, w:0, l:0, nr:0, nrr:"+0.000", pts:0},
+];
+
+// ===== NAVIGATION =====
+function showSection(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((b,i) => {
+    const ids = ['home','predict','points','xi','toss','live','schedule'];
+    b.classList.toggle('active', ids[i] === id);
+  });
+  document.querySelectorAll('.mob-nav-btn').forEach((b,i) => {
+    const ids = ['home','predict','points','xi','toss','live','schedule'];
+    b.classList.toggle('active', ids[i] === id);
+  });
+  window.scrollTo(0,0);
+}
+
+// ===== POINTS TABLE =====
+function renderPoints() {
+  const tbody = document.getElementById('pointsTableBody');
+  const rankClasses = ['rank-1','rank-2','rank-3','rank-4','rank-other','rank-other','rank-other','rank-other','rank-other','rank-other'];
+  tbody.innerHTML = pointsData.map((row, i) => {
+    const t = TEAMS[row.team];
+    const isPlayoff = i === 3;
+    return `<tr class="${isPlayoff ? 'playoff-line' : ''}">
+      <td><div class="rank-badge ${rankClasses[i]}">${row.rank}</div></td>
+      <td><div class="team-cell"><div class="team-dot dot-${row.team.toLowerCase()}"></div><span style="color:${t.color}; font-weight:600">${t.short}</span><span style="color:var(--muted); font-size:0.75rem; margin-left:4px; display:none" class="team-fullname"> ${t.name}</span></div></td>
+      <td>${row.p}</td><td>${row.w}</td><td>${row.l}</td><td>${row.nr}</td>
+      <td class="${row.nrr.startsWith('+') ? 'nrr-pos' : 'nrr-neg'}">${row.nrr}</td>
+      <td class="pts-bold">${row.pts}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== PLAYING XI =====
+let currentXITeam = 'RCB';
+function renderXITabs() {
+  const tabs = document.getElementById('xiTabs');
+  tabs.innerHTML = Object.keys(TEAMS).map(k =>
+    `<button class="xi-tab ${k===currentXITeam?'active':''}" onclick="selectXITeam('${k}')">${k}</button>`
+  ).join('');
+}
+function selectXITeam(team) {
+  currentXITeam = team;
+  renderXITabs();
+  renderXI();
+}
+function renderXI() {
+  const grid = document.getElementById('xiGrid');
+  const players = PLAYING_XI[currentXITeam];
+  const t = TEAMS[currentXITeam];
+  const roleColors = {BAT:'role-bat', BOWL:'role-bowl', AR:'role-ar', WK:'role-wk'};
+  const roleLabels = {BAT:'Batsman', BOWL:'Bowler', AR:'All-Rounder', WK:'Wicket-Keeper'};
+  grid.innerHTML = players.map((p,i) => `
+    <div class="xi-player" style="border-top:3px solid ${t.color}20">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start">
+        <div class="xi-player-flag">${p.flag}</div>
+        <div style="font-size:0.7rem; color:var(--muted)">#${i+1}</div>
+      </div>
+      <div class="xi-player-name" style="margin-top:0.4rem">${p.name}</div>
+      <div class="xi-player-role ${roleColors[p.role]}">${roleLabels[p.role]}</div>
+      ${p.c ? '<div class="xi-captain">© CAPTAIN</div>' : ''}
+    </div>
+  `).join('');
+}
+
+// ===== TOSS =====
+let tossTeam1 = null, tossTeam2 = null, tossFlipping = false;
+function renderTossTeams() {
+  const div = document.getElementById('tossTeams');
+  div.innerHTML = Object.keys(TEAMS).map(k => {
+    const t = TEAMS[k];
+    const sel = k===tossTeam1 || k===tossTeam2;
+    return `<button class="toss-team-btn ${sel?'selected':''}" onclick="selectTossTeam('${k}')" style="${sel?`border-color:${t.color}; color:${t.color}`:''}">${t.short}</button>`;
+  }).join('');
+}
+function selectTossTeam(team) {
+  if (tossTeam1 === team) { tossTeam1 = null; }
+  else if (tossTeam2 === team) { tossTeam2 = null; }
+  else if (!tossTeam1) tossTeam1 = team;
+  else if (!tossTeam2) tossTeam2 = team;
+  else { tossTeam1 = tossTeam2; tossTeam2 = team; }
+  renderTossTeams();
+  document.getElementById('tossResult').textContent = '';
+  document.getElementById('tossDetail').textContent = '';
+}
+function flipCoin() {
+  if (tossFlipping) return;
+  if (!tossTeam1 || !tossTeam2) {
+    document.getElementById('tossResult').textContent = '⚠️ Select 2 teams first!';
+    document.getElementById('tossDetail').textContent = '';
+    return;
+  }
+  tossFlipping = true;
+  document.getElementById('tossResult').textContent = '';
+  document.getElementById('tossDetail').textContent = '';
+  const coin = document.getElementById('coin');
+  const isHeads = Math.random() > 0.5;
+  coin.style.setProperty('--final-rot', isHeads ? '3600deg' : '3780deg');
+  coin.classList.remove('flipping');
+  void coin.offsetWidth;
+  coin.classList.add('flipping');
+  setTimeout(() => {
+    const winner = Math.random() > 0.5 ? TEAMS[tossTeam1] : TEAMS[tossTeam2];
+    const loser = winner === TEAMS[tossTeam1] ? TEAMS[tossTeam2] : TEAMS[tossTeam1];
+    const choice = Math.random() > 0.5 ? 'bat' : 'bowl';
+    document.getElementById('tossResult').textContent = `🏆 ${winner.short} wins the toss!`;
+    document.getElementById('tossDetail').textContent = `${winner.short} elect to ${choice} first • ${loser.short} will ${choice === 'bat' ? 'bowl' : 'bat'} first`;
+    tossFlipping = false;
+    coin.classList.remove('flipping');
+  }, 1600);
+}
+
+// ===== LIVE SCORE =====
+function renderLive() {
+  const content = document.getElementById('liveContent');
+  const today = new Date();
+  const seasonStart = new Date('2026-03-28');
+  if (today < seasonStart) {
+    content.innerHTML = `
+      <div class="live-match-card" style="text-align:center; padding:3rem">
+        <div style="font-size:3rem; margin-bottom:1rem">🏏</div>
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:var(--gold)">Season hasn't started yet!</div>
+        <div style="color:var(--muted); margin-top:0.5rem">IPL 2026 kicks off on <strong style="color:#fff">28 March 2026</strong></div>
+        <div style="margin-top:1rem; font-size:0.85rem; color:var(--muted)">Opening match: <strong style="color:var(--gold)">RCB vs SRH</strong> at M. Chinnaswamy Stadium, Bengaluru · 7:30 PM IST</div>
+      </div>`;
+  } else {
+    // Simulated live score
+    const balls = ['1','0','4','2','W','1','6','0','3','1','4','2'];
+    content.innerHTML = `
+      <div class="live-match-card">
+        <div class="live-match-header">
+          <div>
+            <div class="live-badge" style="display:inline-flex; margin-bottom:0.5rem"><div class="live-dot"></div> LIVE</div>
+            <div class="live-match-teams">RCB vs SRH</div>
+            <div class="live-match-venue">📍 M. Chinnaswamy Stadium, Bengaluru · Match 1</div>
+          </div>
+        </div>
+        <div class="score-main">
+          <div class="score-team">
+            <div class="score-name">Royal Challengers</div>
+            <div class="score-runs" style="color:#C41E3A">186/4</div>
+            <div class="score-overs">(18.3 overs)</div>
+          </div>
+          <div class="score-center">
+            <div class="crr-badge">CRR 10.05</div>
+            <div style="margin-top:0.5rem; font-size:0.7rem; color:var(--muted)">Need 42 off<br>9 balls</div>
+          </div>
+          <div class="score-team" style="text-align:right">
+            <div class="score-name" style="text-align:right">Sunrisers</div>
+            <div class="score-runs" style="color:#FF6900">148/6</div>
+            <div class="score-overs">(Batting)</div>
+          </div>
+        </div>
+        <div class="batting-info">
+          <div class="bat-item"><div class="bat-name">🦇 Travis Head</div><div class="bat-stats">62(34) • 9×4 • 3×6</div></div>
+          <div class="bat-item"><div class="bat-name">🦇 Nitish Reddy</div><div class="bat-stats">18(12) • 2×4</div></div>
+          <div class="bat-item"><div class="bat-name">🎳 Josh Hazlewood</div><div class="bat-stats">3-0-22-2</div></div>
+          <div class="bat-item"><div class="bat-name">🎳 Romario Shepherd</div><div class="bat-stats">2-0-18-1</div></div>
+        </div>
+        <div style="margin-top:1rem; font-size:0.73rem; color:var(--muted); letter-spacing:1px">LAST 12 BALLS</div>
+        <div class="recent-balls">
+          ${balls.map(b => `<div class="ball ball-${b.toLowerCase()}">${b}</div>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  // Upcoming matches
+  const upcoming = document.getElementById('upcomingMatches');
+  upcoming.innerHTML = SCHEDULE.slice(0,5).map(m =>
+    `<div class="upcoming-match">
+      <div>
+        <div class="upcoming-teams">${TEAMS[m.t1].name} <span style="color:var(--muted)">vs</span> ${TEAMS[m.t2].name}</div>
+        <div class="upcoming-meta">📅 ${m.date} · 📍 ${m.venue}</div>
+      </div>
+      <div class="upcoming-time">${m.time} IST</div>
+    </div>`
+  ).join('');
+}
+function refreshScore() { renderLive(); }
+
+// ===== SCHEDULE =====
+function renderSchedule(filter='all') {
+  const list = document.getElementById('scheduleList');
+  const filtered = filter === 'all' ? SCHEDULE : SCHEDULE.filter(m => m.t1===filter || m.t2===filter);
+  list.innerHTML = filtered.map(m =>
+    `<div class="match-row">
+      <div class="match-date"><div class="match-date-day">${m.date.split(' ')[0]}</div><div>${m.date.split(' ')[1]}</div><div style="font-size:0.65rem">${m.day}</div></div>
+      <div>
+        <div class="match-teams">
+          <span style="color:${TEAMS[m.t1].color}">${TEAMS[m.t1].short}</span>
+          <span style="color:var(--muted); margin:0 0.5rem">vs</span>
+          <span style="color:${TEAMS[m.t2].color}">${TEAMS[m.t2].short}</span>
+        </div>
+        <div class="match-venue">📍 ${m.venue}</div>
+      </div>
+      <div class="match-time">${m.time}<div style="font-size:0.65rem; color:var(--muted)">IST</div></div>
+    </div>`
+  ).join('');
+}
+function filterSchedule(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSchedule(filter);
+}
+
+// ===== PREDICTION (AI) =====
+const teamAnalysis = {
+  RCB: {batting:88, bowling:82, fielding:80, experience:90, homeAdv:85, recentForm:86},
+  MI:  {batting:92, bowling:89, fielding:85, experience:95, homeAdv:88, recentForm:84},
+  CSK: {batting:87, bowling:83, fielding:82, experience:97, homeAdv:86, recentForm:85},
+  KKR: {batting:85, bowling:83, fielding:84, experience:88, homeAdv:82, recentForm:83},
+  SRH: {batting:90, bowling:84, fielding:83, experience:82, homeAdv:83, recentForm:87},
+  DC:  {batting:83, bowling:85, fielding:80, experience:82, homeAdv:80, recentForm:78},
+  RR:  {batting:84, bowling:82, fielding:81, experience:83, homeAdv:79, recentForm:80},
+  GT:  {batting:91, bowling:90, fielding:87, experience:86, homeAdv:88, recentForm:89},
+  PBKS:{batting:85, bowling:82, fielding:80, experience:83, homeAdv:80, recentForm:82},
+  LSG: {batting:87, bowling:86, fielding:82, experience:84, homeAdv:82, recentForm:85},
+};
+
+async function runPrediction() {
+  const t1 = document.getElementById('team1Select').value;
+  const t2 = document.getElementById('team2Select').value;
+  if (!t1 || !t2) { alert('Please select both teams!'); return; }
+  if (t1 === t2) { alert('Please select different teams!'); return; }
+
+  const btn = document.getElementById('predictBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+  document.getElementById('aiTyping').classList.add('show');
+  document.getElementById('resultCard').classList.remove('show');
+
+  const a1 = teamAnalysis[t1], a2 = teamAnalysis[t2];
+  const score1 = (a1.batting + a1.bowling + a1.fielding + a1.experience + a1.homeAdv + a1.recentForm)/6;
+  const score2 = (a2.batting + a2.bowling + a2.fielding + a2.experience + a2.homeAdv + a2.recentForm)/6;
+  const noise = (Math.random()-0.5)*8;
+  const adjScore1 = score1 + noise;
+  const total = adjScore1 + score2;
+  const prob1 = Math.round((adjScore1/total)*100);
+  const prob2 = 100 - prob1;
+  const winner = prob1 > prob2 ? t1 : t2;
+  const loser = winner === t1 ? t2 : t1;
+  const winnerProb = winner === t1 ? prob1 : prob2;
+
+  const prompt = `You are an IPL 2026 cricket expert AI. Analyze this T20 match:
+Team 1: ${TEAMS[t1].name} (${t1}) - Captain: ${TEAMS[t1].captain}
+Team 2: ${TEAMS[t2].name} (${t2}) - Captain: ${TEAMS[t2].captain}
+Predicted winner: ${TEAMS[winner].name} with ${winnerProb}% win probability.
+
+Key players for ${t1}: ${PLAYING_XI[t1].slice(0,4).map(p=>p.name).join(', ')}
+Key players for ${t2}: ${PLAYING_XI[t2].slice(0,4).map(p=>p.name).join(', ')}
+
+Write a 3-4 sentence expert analysis explaining WHY ${TEAMS[winner].name} is predicted to win. Mention key players, team strengths, and one tactical factor. Be specific and passionate about cricket. Keep it concise and engaging.`;
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:300,
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data = await resp.json();
+    const analysis = data.content?.[0]?.text || "Analysis unavailable.";
+
+    document.getElementById('aiTyping').classList.remove('show');
+    const rc = document.getElementById('resultCard');
+    document.getElementById('resultWinner').textContent = `🏆 ${TEAMS[winner].name}`;
+    document.getElementById('resultSub').textContent = `Predicted win probability: ${winnerProb}%`;
+    document.getElementById('probBars').innerHTML = `
+      <div class="prob-bar-item">
+        <div class="prob-label"><span style="color:${TEAMS[t1].color}">${t1}</span><span>${prob1}%</span></div>
+        <div class="prob-track"><div class="prob-fill" style="width:${prob1}%; background:${TEAMS[t1].color}"></div></div>
+      </div>
+      <div class="prob-bar-item">
+        <div class="prob-label"><span style="color:${TEAMS[t2].color}">${t2}</span><span>${prob2}%</span></div>
+        <div class="prob-track"><div class="prob-fill" style="width:${prob2}%; background:${TEAMS[t2].color}"></div></div>
+      </div>`;
+    document.getElementById('analysisGrid').innerHTML = [
+      {val: `${a1.batting} vs ${a2.batting}`, lbl:"Batting"},
+      {val: `${a1.bowling} vs ${a2.bowling}`, lbl:"Bowling"},
+      {val: `${a1.experience} vs ${a2.experience}`, lbl:"Experience"},
+      {val: `${a1.recentForm} vs ${a2.recentForm}`, lbl:"Form"},
+    ].map(x=>`<div class="analysis-item"><div class="analysis-val">${x.val}</div><div class="analysis-lbl">${x.lbl}</div></div>`).join('');
+    document.getElementById('aiResponseText').textContent = analysis;
+    rc.classList.add('show');
+  } catch(e) {
+    document.getElementById('aiTyping').classList.remove('show');
+    document.getElementById('resultWinner').textContent = `🏆 ${TEAMS[winner].name}`;
+    document.getElementById('resultSub').textContent = `Predicted win probability: ${winnerProb}%`;
+    document.getElementById('probBars').innerHTML = `
+      <div class="prob-bar-item">
+        <div class="prob-label"><span style="color:${TEAMS[t1].color}">${t1}</span><span>${prob1}%</span></div>
+        <div class="prob-track"><div class="prob-fill" style="width:${prob1}%; background:${TEAMS[t1].color}"></div></div>
+      </div>
+      <div class="prob-bar-item">
+        <div class="prob-label"><span style="color:${TEAMS[t2].color}">${t2}</span><span>${prob2}%</span></div>
+        <div class="prob-track"><div class="prob-fill" style="width:${prob2}%; background:${TEAMS[t2].color}"></div></div>
+      </div>`;
+    document.getElementById('analysisGrid').innerHTML = '';
+    document.getElementById('aiResponseText').textContent = `${TEAMS[winner].name} edges ahead with superior squad depth, ${winnerProb > 60 ? 'dominant key players' : 'recent form advantage'} and tactical flexibility. Watch out for ${PLAYING_XI[winner][0].name} and ${PLAYING_XI[winner][1].name} to lead the charge.`;
+    document.getElementById('resultCard').classList.add('show');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '⚡ PREDICT WINNER';
+}
+
+// ===== INIT =====
+renderPoints();
+renderXITabs();
+renderXI();
+renderTossTeams();
+renderLive();
+renderSchedule();
+</script>
+</body>
+</html>
